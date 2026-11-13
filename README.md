@@ -44,7 +44,30 @@ npm run test:strict
 
 # Run a single spec file
 npx wdio run wdio.conf.js --spec ./test/specs/coupon-ac1-apply.spec.js
+
+# Open the HTML test report in browser
+npm run report:open
 ```
+
+---
+
+## Test Reports & Configuration
+
+After every test run, a self-contained HTML test report is automatically generated at:
+```text
+reports/html-reports/master-report.html
+```
+
+To view the report in your browser:
+```bash
+npm run report:open
+```
+
+### Configurable via `config/wdio.base.conf.js`:
+* **Reporters**: Configured in `reporters` array (`spec` for terminal output + `html-nice` for HTML output).
+* **Output Path**: Stored in `./reports/html-reports/`.
+* **Master Aggregation**: Uses WDIO `onPrepare` and `onComplete` lifecycle hooks to combine all 7 spec files into a single unified report.
+* **Failure Screenshots**: The `afterTest` hook automatically captures a screenshot on test failure and embeds it in the report.
 
 ---
 
