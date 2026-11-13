@@ -1,14 +1,13 @@
 {
   "name": "waracle-test",
   "version": "1.0.0",
-  "description": "WebDriverIO test automation framework for Waracle Store (Web & extendable to Appium)",
+  "description": "WebDriverIO test automation framework for Waracle Store Web application",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "wdio run ./wdio.conf.js",
     "test:headed": "HEADLESS=false wdio run ./wdio.conf.js",
-    "test:strict": "STRICT_AC_MODE=true wdio run ./wdio.conf.js",
-    "test:appium": "wdio run ./config/wdio.appium.conf.js"
+    "test:strict": "STRICT_AC_MODE=true wdio run ./wdio.conf.js"
   },
   "keywords": [],
   "author": "",

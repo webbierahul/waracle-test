@@ -1,5 +1,5 @@
 /**
- * Base WebDriverIO configuration shared across Web and Mobile (Appium) runners.
+ * Base WebDriverIO configuration for Web runner.
  */
 export const baseConfig = {
     maxInstances: 1,

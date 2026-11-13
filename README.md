@@ -68,8 +68,7 @@ npx wdio run wdio.conf.js --spec ./test/specs/coupon-ac1-apply.spec.js
 waracle-test/
 ├── config/
 │   ├── wdio.base.conf.js       # Base runner, timeouts, single-worker setting
-│   ├── wdio.web.conf.js        # Chrome browser configuration
-│   └── wdio.appium.conf.js     # Appium mobile configuration
+│   └── wdio.web.conf.js        # Chrome browser configuration
 ├── test/
 │   ├── fixtures/
 │   │   └── testData.js         # Coupons, demo user credentials, customer data
@@ -83,23 +82,11 @@ waracle-test/
 │   │   ├── cart.page.js        # Cart & order summary
 │   │   ├── login.page.js       # User sign in
 │   │   ├── checkout.page.js    # Shipping & payment details
-│   │   ├── order-success.page.js # Order confirmation details
-│   │   └── mobile/
-│   │       └── cart.screen.js  # Mobile Screen Object mapped to testIDs
+│   │   └── order-success.page.js # Order confirmation details
 │   └── specs/                  # Test spec files
 ├── package.json
 └── wdio.conf.js
 ```
-
----
-
-## Appium Mobile Extendability
-
-The framework can be extended to test the mobile app (`qa-candidate-test/mobile`) using Appium:
-* **Shared Config**: `config/wdio.appium.conf.js` extends `wdio.base.conf.js` with Android (UiAutomator2) and iOS (XCUITest) capabilities.
-* **Native Locators**: Directly reuses the `testID` props already present in `mobile/src/screens/CartScreen.tsx` (`~cart_coupon_input`, `~cart_apply_button`, `~cart_proceed_button`).
-* **Screen Object**: Sample implementation in `test/pageobjects/mobile/cart.screen.js` mirrors the web `CartPage` methods.
-* **Execution**: Run with `npm run test:appium` once an Appium server is running.
 
 ---
 
