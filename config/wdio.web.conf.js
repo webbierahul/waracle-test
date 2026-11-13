@@ -3,17 +3,27 @@ import { baseConfig } from './wdio.base.conf.js';
 const isHeadless = process.env.HEADLESS !== 'false';
 
 /**
- * Web-specific WebDriverIO configuration.
+ * Web-specific WebDriverIO configuration for Cucumber.
  */
 export const config = {
     ...baseConfig,
     runner: 'local',
     specs: [
-        './test/specs/**/*.spec.js',
+        './features/**/*.feature',
     ],
     maxInstances: 1,
     capabilities: [{
         browserName: 'chrome',
+        'cjson:metadata': {
+            browser: {
+                name: 'chrome',
+                version: 'latest',
+            },
+            device: 'MacBook',
+            platform: {
+                name: 'macOS',
+            },
+        },
         'goog:chromeOptions': {
             args: [
                 ...(isHeadless ? ['--headless=new'] : []),

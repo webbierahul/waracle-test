@@ -1,6 +1,6 @@
 # Waracle Store — Web Test Automation Framework (WS-101)
 
-Automated test suite built with **WebDriverIO (v8)** and **JavaScript** for the Waracle Store web application, focusing on the **Coupon Codes at Checkout** feature (**WS-101**).
+Automated BDD test suite built with **WebDriverIO (v8)**, **Cucumber**, and **JavaScript** for the Waracle Store web application, focusing on the **Coupon Codes at Checkout** feature (**WS-101**).
 
 ---
 
@@ -33,55 +33,51 @@ npm install
 
 ### 3. Run the Tests
 ```bash
-# Run all tests in headless Chrome (default regression mode)
+# Run all Cucumber features in headless Chrome
 npm test
 
 # Run tests in headed (visible) Chrome browser
 npm run test:headed
 
-# Run in strict mode (fails on defect WS-DEFECT-01)
-npm run test:strict
+# Run a specific feature file
+npx wdio run wdio.conf.js --spec ./features/coupon-ac1-apply.feature
 
-# Run a single spec file
-npx wdio run wdio.conf.js --spec ./test/specs/coupon-ac1-apply.spec.js
-
-# Open the HTML test report in browser
+# Open the Cucumber HTML test report in browser
 npm run report:open
 ```
 
 ---
 
-## Test Reports & Configuration
+## Cucumber HTML Test Reports
 
-After every test run, a self-contained HTML test report is automatically generated at:
+After every test execution, an interactive, rich **Cucumber HTML Report** is automatically generated at:
 ```text
-reports/html-reports/master-report.html
+reports/cucumber-html/index.html
 ```
 
-To view the report in your browser:
+To open the report in your default browser:
 ```bash
 npm run report:open
 ```
 
-### Configurable via `config/wdio.base.conf.js`:
-* **Reporters**: Configured in `reporters` array (`spec` for terminal output + `html-nice` for HTML output).
-* **Output Path**: Stored in `./reports/html-reports/`.
-* **Master Aggregation**: Uses WDIO `onPrepare` and `onComplete` lifecycle hooks to combine all 7 spec files into a single unified report.
-* **Failure Screenshots**: The `afterTest` hook automatically captures a screenshot on test failure and embeds it in the report.
+### Report Features & Configuration (`config/wdio.base.conf.js`):
+* **Cucumber JSON + HTML**: Generates test metrics via `wdio-cucumberjs-json-reporter` and renders interactive dashboards via `multiple-cucumber-html-reporter`.
+* **Failure Screenshots**: When any step fails, an automatic screenshot is taken via the `afterStep` hook and embedded directly into the report.
+* **Defect Visibility**: Scenarios asserting Acceptance Criteria that fail due to application bugs are displayed in **red** with full assertion error stack traces and attached UI screenshots.
 
 ---
 
-## Test Specs & Coverage
+## Features & Coverage Matrix
 
-| Spec File | Acceptance Criteria | What It Tests |
-|---|---|---|
-| `test/specs/coupon-ac1-apply.spec.js` | AC-1 | Coupon input visibility, applying `WARACLE25`, summary line item |
-| `test/specs/coupon-ac2-discount.spec.js` | AC-2 | Subtotal discount calculation, defect check |
-| `test/specs/coupon-ac3-shipping.spec.js` | AC-3 | £0 shipping on empty cart, flat £5 on single/multi-item carts |
-| `test/specs/coupon-ac4-totals.spec.js` | AC-4 | Math verification: `Total = Subtotal - Discount + Shipping` |
-| `test/specs/coupon-ac5-negative.spec.js` | AC-5 | Invalid codes, empty strings, whitespace, clearing active coupon |
-| `test/specs/coupon-ac6-confirmation.spec.js` | AC-6 | Full flow: cart -> login -> checkout -> confirmation page totals |
-| `test/specs/coupon-edge-cases.spec.js` | Edge Cases | Case insensitivity (`waracle25`, `Waracle25`), trimmed spaces, quantity updates |
+| Feature File | Acceptance Criteria | What It Tests | Status |
+|---|---|---|---|
+| `features/coupon-ac1-apply.feature` | AC-1 | Coupon input visibility, applying `WARACLE25`, summary line item | Passed |
+| `features/coupon-ac2-discount.feature` | AC-2 | 25% discount formula validation | Failed (Flags WS-DEFECT-01) |
+| `features/coupon-ac3-shipping.feature` | AC-3 | £0 shipping on empty cart, flat £5 on single/multi-item carts | Passed |
+| `features/coupon-ac4-totals.feature` | AC-4 | Math verification: `Total = Subtotal - Discount + Shipping` | Passed |
+| `features/coupon-ac5-negative.feature` | AC-5 | Invalid codes, empty strings, whitespace, clearing active coupon | Failed (Flags WS-DEFECT-02) |
+| `features/coupon-ac6-confirmation.feature` | AC-6 | Full flow: cart -> login -> checkout -> confirmation page totals | Passed |
+| `features/coupon-edge-cases.feature` | Edge Cases | Case insensitivity (`waracle25`, `Waracle25`), trimmed spaces, quantity updates | Passed |
 
 ---
 
@@ -90,23 +86,32 @@ npm run report:open
 ```text
 waracle-test/
 ├── config/
-│   ├── wdio.base.conf.js       # Base runner, timeouts, single-worker setting
-│   └── wdio.web.conf.js        # Chrome browser configuration
+│   ├── wdio.base.conf.js       # Base runner, cucumberOpts, reporter config, lifecycle hooks
+│   └── wdio.web.conf.js        # Chrome browser configuration, specs targeting features
+├── features/
+│   ├── coupon-ac1-apply.feature
+│   ├── coupon-ac2-discount.feature
+│   ├── coupon-ac3-shipping.feature
+│   ├── coupon-ac4-totals.feature
+│   ├── coupon-ac5-negative.feature
+│   ├── coupon-ac6-confirmation.feature
+│   ├── coupon-edge-cases.feature
+│   └── step-definitions/
+│       └── steps.js            # Cucumber step definitions with screenshot capture
 ├── test/
 │   ├── fixtures/
 │   │   └── testData.js         # Coupons, demo user credentials, customer data
 │   ├── helpers/
 │   │   └── currency.js         # Currency parsing and rounding utility
-│   ├── pageobjects/            # Page Object Model classes
-│   │   ├── page.js             # Base page (session reset, toasts, waits)
-│   │   ├── navbar.component.js # Header navigation
-│   │   ├── products.page.js    # Product list page
-│   │   ├── product-detail.page.js # Product details & Add-to-Cart
-│   │   ├── cart.page.js        # Cart & order summary
-│   │   ├── login.page.js       # User sign in
-│   │   ├── checkout.page.js    # Shipping & payment details
-│   │   └── order-success.page.js # Order confirmation details
-│   └── specs/                  # Test spec files
+│   └── pageobjects/            # Page Object Model classes
+│       ├── page.js             # Base page (session reset, toasts, waits)
+│       ├── navbar.component.js # Header navigation
+│       ├── products.page.js    # Product list page
+│       ├── product-detail.page.js # Product details & Add-to-Cart
+│       ├── cart.page.js        # Cart & order summary
+│       ├── login.page.js       # User sign in
+│       ├── checkout.page.js    # Shipping & payment details
+│       └── order-success.page.js # Order confirmation details
 ├── package.json
 └── wdio.conf.js
 ```
@@ -123,7 +128,7 @@ waracle-test/
 * **Expected**: 25% of £19.99 = £5.00 discount. Total = £19.99.
 * **Actual**: Discount applied is £0.25 (flat 25 pence). Total = £24.74.
 * **Root Cause**: Code has `discount = 0.25;` instead of `discount = round2(subtotal * 0.25);`.
-* **Test Note**: Run `npm run test:strict` to see this fail automated verification.
+* **Report Status**: Marked as **FAILED** in Cucumber HTML Report under `features/coupon-ac2-discount.feature` (`Expected: 5, Received: 0.25`).
 
 ### 2. [WS-DEFECT-02] Medium — Invalid coupon shows info toast; empty code gives no message
 * **File**: `web/src/pages/CartPage.tsx` (lines 30-37)
@@ -131,6 +136,7 @@ waracle-test/
   1. Enter `INVALID99` and click Apply. Shows neutral "Coupon entered" toast instead of an error.
   2. Submit an empty coupon field. It silently clears without any user feedback.
 * **Expected**: Clear error message per AC-5 (e.g. "Invalid coupon code").
+* **Report Status**: Marked as **FAILED** in Cucumber HTML Report under `features/coupon-ac5-negative.feature`.
 
 ### 3. [WS-DEFECT-03] Minor — No coupon input on Checkout page
 * **File**: `web/src/pages/CheckoutPage.tsx`
